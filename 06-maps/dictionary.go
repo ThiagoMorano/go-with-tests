@@ -24,32 +24,28 @@ func (d Dictionary) Search(word string) (string, error) {
 
 func (d Dictionary) Add(word, definition string) error {
 	_, err := d.Search(word)
-
-	// @TODO: this looks weird, can we clean this?
-	switch err {
-	case nil:
+	if err == nil {
+		// expects word to not exist
 		return ErrWordExists
-	case ErrNotFound:
-		d[word] = definition
-	default:
+	} else if err != ErrNotFound {
+		// a different error was returned
 		return err
 	}
 
+	d[word] = definition
 	return nil
 }
 
 func (d Dictionary) Update(word, definition string) error {
 	_, err := d.Search(word)
-
-	// @TODO: this looks weird, can we clean this?
-	switch err {
-	case ErrNotFound:
+	if err == ErrNotFound {
+		// word was not found
 		return ErrWordDoesNotExist
-	case nil:
-		d[word] = definition
-	default:
+	} else if err != nil {
+		// a different error was returned
 		return err
 	}
 
+	d[word] = definition
 	return nil
 }
